@@ -117,19 +117,19 @@ async fn get_client_info(Query(params): Query<GetClientInfoParams>) -> impl Into
         },
     };
 
-    if client_info.verify_passwd(passwd_plaintext) {
-        let resp = GetClientInfoResponse::new(
-            Some(client_info.id), &client_info.account, client_info.passwd
-        ).set_ok(true);
-        (StatusCode::OK, Json(resp))
-    }
-    else {
+    if !client_info.verify_passwd(passwd_plaintext) {
         /* Build up a response with error message. */
         let resp = GetClientInfoResponse::new(
-            None, &params.account, None
+          None, &params.account, None
         ).set_message(Some(ResponseMessage::InvalidPassword));
         /* Response a `403` status code. */
         (StatusCode::FORBIDDEN, Json(resp))
+    }
+    else {
+        let resp = GetClientInfoResponse::new(
+            Some(client_info.id), &client_info.account, client_info.clone().passwd
+        ).set_ok(true).set_data(client_info);
+        (StatusCode::OK, Json(resp))
     }
 }
 

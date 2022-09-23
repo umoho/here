@@ -1,5 +1,7 @@
 use serde_derive::{Serialize, Deserialize};
 
+use crate::client::ClientInfo;
+
 /// The param form of get client info requests.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct GetClientInfoParams {
@@ -15,6 +17,7 @@ pub struct GetClientInfoResponse {
     passwd: Option<String>,
     is_ok: bool,
     message: Option<ResponseMessage>,
+    data: Option<ClientInfo>,
 }
 
 impl GetClientInfoResponse {
@@ -25,6 +28,7 @@ impl GetClientInfoResponse {
             passwd,
             is_ok: false,
             message: None,
+            data: None,
         }
     }
 
@@ -40,6 +44,11 @@ impl GetClientInfoResponse {
 
     pub fn set_id(mut self, id: Option<u128>) -> Self {
         self.id = id;
+        self
+    }
+
+    pub fn set_data(mut self, data: ClientInfo) -> Self {
+        self.data = Some(data);
         self
     }
 }
