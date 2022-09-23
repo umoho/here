@@ -1,0 +1,21 @@
+[package]
+name = "client"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+debug-printing = []
+
+[dependencies]
+utils = { path = "../utils/" }  # Licenses see the package
+reqwest = { version = "0.11", features = ["json"] }  # MIT OR Apache-2.0
+tokio = { version = "1", features = ["full"] }  # MIT
+anyhow = "1.0.65"  # MIT OR Apache-2.0
+serde = "1.0.144"  # MIT OR Apache-2.0
+serde_derive = "1.0.144"  # MIT OR Apache-2.0
+local-ip-address = "0.4.8"  # MIT OR Apache-2.0
+rand = "0.8.5"  # MIT OR Apache-2.0
+toml = "0.5"  # MIT OR Apache-2.0
+ctrlc = "3.2.3"  # MIT OR Apache-2.0

@@ -1,0 +1,6 @@
+/target
+/.vscode
+/client-info.db
+/server.conf.toml
+/client.conf.toml
+/Cargo.lock

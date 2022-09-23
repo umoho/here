@@ -1,0 +1,21 @@
+[package]
+name = "server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+debug-printing = []
+
+[dependencies]
+utils = { path = "../utils/" }  # Licenses see the package
+tokio = { version = "1", features = ["full"] }  # MIT
+serde = "1.0.144"  # MIT OR Apache-2.0
+serde_derive = "1.0.144"  # MIT OR Apache-2.0
+axum = "0.5.16"  # MIT
+anyhow = "1.0.65"  # MIT OR Apache-2.0
+tinydb = "1.0.0"  # MIT
+chrono = { version = "0.4.22", features = ["serde"] }  # MIT OR Apache-2.0
+ctrlc = "3.2.3"  # MIT OR Apache-2.0
+toml = "0.5"  # MIT OR Apache-2.0
