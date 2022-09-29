@@ -12,20 +12,14 @@ pub struct GetClientInfoParams {
 /// The response form of get client info requests.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct GetClientInfoResponse {
-    id: Option<u128>,
-    account: String,
-    passwd: Option<String>,
     is_ok: bool,
     message: Option<ResponseMessage>,
     data: Option<ClientInfo>,
 }
 
 impl GetClientInfoResponse {
-    pub fn new(id: Option<u128>, account: &str, passwd: Option<String>) -> Self {
+    pub fn new() -> Self {
         Self {
-            id,
-            account: account.to_owned(),
-            passwd,
             is_ok: false,
             message: None,
             data: None,
@@ -42,13 +36,8 @@ impl GetClientInfoResponse {
         self
     }
 
-    pub fn set_id(mut self, id: Option<u128>) -> Self {
-        self.id = id;
-        self
-    }
-
-    pub fn set_data(mut self, data: ClientInfo) -> Self {
-        self.data = Some(data);
+    pub fn set_data(mut self, data: &ClientInfo) -> Self {
+        self.data = Some(data.to_owned());
         self
     }
 }

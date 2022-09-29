@@ -22,6 +22,10 @@ const APP_NAME: &str = "Here";
 const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// The default lifetime of the client information record. Seconds.
+#[cfg(feature = "debug-lifetime")]
+pub(crate) const DEFAULT_LIFETIME: u64 = 5;
+
+#[cfg(not(feature = "debug-lifetime"))]
 pub(crate) const DEFAULT_LIFETIME: u64 = 60;
 
 /// The path where the database file put.
@@ -58,9 +62,8 @@ async fn get_client_info(Query(params): Query<GetClientInfoParams>) -> impl Into
         Ok(db) => db,
         Err(_) => {
             /* Build up a response with error message. */
-            let resp = GetClientInfoResponse::new(
-                None, &params.account, params.passwd
-            ).set_message(Some(ResponseMessage::DatabaseError));
+            let resp = GetClientInfoResponse::new()
+                .set_message(Some(ResponseMessage::DatabaseError));
             /* Response a `500` status code. */
             return (StatusCode::INTERNAL_SERVER_ERROR, Json(resp));
         },
@@ -70,24 +73,22 @@ async fn get_client_info(Query(params): Query<GetClientInfoParams>) -> impl Into
         |r: &ClientInfoRecord| {
             &r.client_info.account
         },
-        params.account.clone()
+        params.account
     ) {
         Ok(i) => i,
         Err(e) => {
             match e {
                 DatabaseError::ItemNotFound => {
                     /* Build up a response with error message. */
-                    let resp = GetClientInfoResponse::new(
-                        None, &params.account, params.passwd
-                    ).set_message(Some(ResponseMessage::NotFound));
+                    let resp = GetClientInfoResponse::new()
+                        .set_message(Some(ResponseMessage::NotFound));
                     /* Response a `404` status code. */
                     return (StatusCode::NOT_FOUND, Json(resp));
                 },
                 _ => {
                     /* Build up a response with error message. */
-                    let resp = GetClientInfoResponse::new(
-                        None, &params.account, params.passwd
-                    ).set_message(Some(ResponseMessage::DatabaseError));
+                    let resp = GetClientInfoResponse::new()
+                        .set_message(Some(ResponseMessage::DatabaseError));
                     /* Response a `500` status code. */
                     return (StatusCode::INTERNAL_SERVER_ERROR, Json(resp));
                 },
@@ -95,23 +96,21 @@ async fn get_client_info(Query(params): Query<GetClientInfoParams>) -> impl Into
         }
     };
     
-    let client_info = item.client_info.clone();
+    let client_info = &item.client_info;
 
     let passwd_plaintext =  match &params.passwd {
         Some(p) => p,
         None => {
             if client_info.passwd.is_some() {
                 /* Build up a response with error message. */
-                let resp = GetClientInfoResponse::new(
-                    None, &params.account, params.passwd
-                ).set_message(Some(ResponseMessage::InvalidPassword));
+                let resp = GetClientInfoResponse::new()
+                    .set_message(Some(ResponseMessage::InvalidPassword));
                 /* Response a `403` status code. */
                 return (StatusCode::FORBIDDEN, Json(resp));
             }
             else {
-                let resp = GetClientInfoResponse::new(
-                    Some(client_info.id), &client_info.account, None
-                ).set_ok(true);
+                let resp = GetClientInfoResponse::new()
+                    .set_ok(true);
                 return (StatusCode::OK, Json(resp));
             }
         },
@@ -119,16 +118,14 @@ async fn get_client_info(Query(params): Query<GetClientInfoParams>) -> impl Into
 
     if !client_info.verify_passwd(passwd_plaintext) {
         /* Build up a response with error message. */
-        let resp = GetClientInfoResponse::new(
-          None, &params.account, None
-        ).set_message(Some(ResponseMessage::InvalidPassword));
+        let resp = GetClientInfoResponse::new()
+            .set_message(Some(ResponseMessage::InvalidPassword));
         /* Response a `403` status code. */
         (StatusCode::FORBIDDEN, Json(resp))
     }
     else {
-        let resp = GetClientInfoResponse::new(
-            Some(client_info.id), &client_info.account, client_info.clone().passwd
-        ).set_ok(true).set_data(client_info);
+        let resp = GetClientInfoResponse::new()
+            .set_ok(true).set_data(client_info);
         (StatusCode::OK, Json(resp))
     }
 }

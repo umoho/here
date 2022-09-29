@@ -71,7 +71,6 @@ fn cleaning_thread() -> JoinHandle<()> {
                     #[cfg(feature = "debug-printing")] println!("Successfully cleaned outdated storage of client information.");
                     /* Have a (very short time) relax. */
                     thread::sleep(Duration::from_secs_f64(CLEAN_FREQUENT));
-                    continue;
                 },
                 Err(e) => {
                     match e {
@@ -79,12 +78,10 @@ fn cleaning_thread() -> JoinHandle<()> {
                             #[cfg(feature = "debug-printing")] println!("Finished to clean the outdated storages in the database.");
                             /* If we can'n find the item, it's possibly be cleaned. Have a relax. */
                             thread::sleep(Duration::from_secs_f64(FINISHED_CLEAR_RELAX_DELAY));
-                            continue;
                         }
                         _ => {
                             eprintln!("Failed to clean the outdated storages.");
                             thread::sleep(Duration::from_secs_f64(ERROR_TO_CLEAN_DELAY));
-                            continue;
                         },
                     }
                 },
